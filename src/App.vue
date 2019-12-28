@@ -1,7 +1,14 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <HelloWorld
+      msg="Welcome to Your Vue.js App"
+      :autoFocus="autoFocus"
+      :select="select"
+      v-model="name"
+    />
+    <h2>Your name is: {{ name }}</h2>
+    <button type="button" @click="reset">Reset</button>
   </div>
 </template>
 
@@ -12,6 +19,22 @@ export default {
   name: 'app',
   components: {
     HelloWorld,
+  },
+  data: () => ({
+    name: 'Provide your name',
+    autoFocus: true,
+    select: true,
+  }),
+  methods: {
+    reset() {
+      this.name = 'Provide your name';
+      this.select = false;
+      this.autoFocus = false;
+      this.$nextTick(() => {
+        this.select = true;
+        this.autoFocus = true;
+      });
+    },
   },
 };
 </script>
