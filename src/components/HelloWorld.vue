@@ -1,5 +1,7 @@
 <template>
-  <div class="hello">
+  <div
+    ref="el"
+    class="hello">
     <h1>{{ msg }}</h1>
     <label>Enter your name: </label>
     <input type="text" v-model="name" /><br>
@@ -50,19 +52,7 @@ export default {
     this.setFocus();
     this.setSelect();
   },
-  methods: {
-    setFocus() {
-      if (this.autoFocus) {
-        this.$el.querySelector('input').focus();
-      }
-    },
-    setSelect() {
-      if (this.select) {
-        this.$el.querySelector('input').select();
-      }
-    },
-  },
-  setup(props) {
+  setup(props, context) {
     // reactive properties
     const changes = ref(0);
     const info = reactive(splitInfo(props.value));
@@ -81,6 +71,18 @@ export default {
       // refs need to be accessed with the value property
       changes.value += 1;
     };
+    const setFocus = () => {
+      if (props.autoFocus) {
+        context.refs.el.querySelector('input').focus();
+      }
+    };
+    const setSelect = () => {
+      if (props.select) {
+        setTimeout(() => {
+          context.refs.el.querySelector('input').select();
+        }, 100);
+      }
+    };
     // return the state with the reactive properties & methods
     // each property must be a ref
     return {
@@ -95,6 +97,8 @@ export default {
       increaseAge,
       decreaseAge,
       setChanges,
+      setFocus,
+      setSelect,
     };
   },
 };
