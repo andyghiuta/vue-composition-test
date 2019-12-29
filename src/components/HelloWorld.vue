@@ -15,7 +15,7 @@
 
 <script>
 import {
-  ref, reactive, toRefs, computed, watch,
+  ref, reactive, toRefs, computed, watch, onMounted,
 } from '@vue/composition-api';
 
 const splitInfo = (info) => {
@@ -32,10 +32,6 @@ export default {
     value: String,
     autoFocus: Boolean,
     select: Boolean,
-  },
-  mounted() {
-    this.setFocus();
-    this.setSelect();
   },
   setup(props, context) {
     // reactive properties
@@ -83,6 +79,11 @@ export default {
     watch(personInfo, () => {
       setChanges();
       context.emit('input', personInfo.value);
+    });
+    // lifecycle hooks
+    onMounted(() => {
+      setFocus();
+      setSelect();
     });
     // return the state with the reactive properties & methods
     // each property must be a ref
