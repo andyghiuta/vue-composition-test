@@ -12,6 +12,15 @@
 </template>
 
 <script>
+import { ref, reactive, toRefs } from '@vue/composition-api';
+
+const splitInfo = (info) => {
+  const [name, age] = info.split('-');
+  return { name, age: parseInt(age, 10) };
+};
+
+const normalizeName = name => name.toUpperCase();
+
 export default {
   name: 'HelloWorld',
   props: {
@@ -20,21 +29,14 @@ export default {
     autoFocus: Boolean,
     select: Boolean,
   },
-  data() {
-    const info = this.splitInfo(this.value);
-    return {
-      ...info,
-      changes: 0,
-    };
-  },
   computed: {
     personInfo() {
-      return `${this.normalizeName(this.name)}-${this.age}`;
+      return `${normalizeName(this.name)}-${this.age}`;
     },
   },
   watch: {
     value(outsideValue) {
-      Object.assign(this, this.splitInfo(outsideValue));
+      Object.assign(this, splitInfo(outsideValue));
     },
     personInfo() {
       this.setChanges();
@@ -52,9 +54,6 @@ export default {
     this.setSelect();
   },
   methods: {
-    setChanges() {
-      this.changes += 1;
-    },
     setFocus() {
       if (this.autoFocus) {
         this.$el.querySelector('input').focus();
@@ -65,19 +64,36 @@ export default {
         this.$el.querySelector('input').select();
       }
     },
-    normalizeName(name) {
-      return name.toUpperCase();
-    },
-    increaseAge() {
-      this.age += 1;
-    },
-    decreaseAge() {
-      this.age -= 1;
-    },
-    splitInfo(info) {
-      const [name, age] = info.split('-');
-      return { name, age: parseInt(age, 10) };
-    },
+  },
+  setup(props) {
+    // reactive properties
+    const changes = ref(0);
+    const info = reactive(splitInfo(props.value));
+
+    // methods
+    const increaseAge = () => {
+      info.age += 1;
+    };
+    const decreaseAge = () => {
+      info.age -= 1;
+    };
+    const setChanges = () => {
+      // refs need to be accessed with the value property
+      changes.value += 1;
+    };
+    // return the state with the reactive properties & methods
+    // each property must be a ref
+    return {
+      // return properties
+      // changes is a ref, can be returned as such
+      changes,
+      // to convert a reactive object to a plain object with refs, use toRefs
+      ...toRefs(info),
+      // return methods
+      increaseAge,
+      decreaseAge,
+      setChanges,
+    };
   },
 };
 </script>
