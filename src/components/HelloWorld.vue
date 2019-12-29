@@ -12,7 +12,9 @@
 </template>
 
 <script>
-import { ref, reactive, toRefs } from '@vue/composition-api';
+import {
+  ref, reactive, toRefs, computed,
+} from '@vue/composition-api';
 
 const splitInfo = (info) => {
   const [name, age] = info.split('-');
@@ -28,11 +30,6 @@ export default {
     value: String,
     autoFocus: Boolean,
     select: Boolean,
-  },
-  computed: {
-    personInfo() {
-      return `${normalizeName(this.name)}-${this.age}`;
-    },
   },
   watch: {
     value(outsideValue) {
@@ -70,6 +67,9 @@ export default {
     const changes = ref(0);
     const info = reactive(splitInfo(props.value));
 
+    // computed properties
+    const personInfo = computed(() => `${normalizeName(info.name)}-${info.age}`);
+
     // methods
     const increaseAge = () => {
       info.age += 1;
@@ -89,6 +89,8 @@ export default {
       changes,
       // to convert a reactive object to a plain object with refs, use toRefs
       ...toRefs(info),
+      // return computed properties
+      personInfo,
       // return methods
       increaseAge,
       decreaseAge,
