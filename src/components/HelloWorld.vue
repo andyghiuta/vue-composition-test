@@ -1,8 +1,13 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <label>Enter your name:</label>
-    <input type="text" v-model="myName" />
+    <label>Enter your name: </label>
+    <input type="text" v-model="name" /><br>
+    <label>Set your age: </label>
+    <button type="button" @click="decreaseAge"> - </button>
+    <span> {{age}} </span>
+    <button type="button" @click="increaseAge"> + </button>
+    <p><small>You made {{changes}} changes to your info</small></p>
   </div>
 </template>
 
@@ -16,21 +21,24 @@ export default {
     select: Boolean,
   },
   data() {
+    const info = this.splitInfo(this.value);
     return {
-      myName: this.value,
+      ...info,
+      changes: 0,
     };
   },
   computed: {
-    normalizedName() {
-      return this.normalizeName(this.myName);
+    personInfo() {
+      return `${this.normalizeName(this.name)}-${this.age}`;
     },
   },
   watch: {
-    value(outsideName) {
-      this.myName = outsideName;
+    value(outsideValue) {
+      Object.assign(this, this.splitInfo(outsideValue));
     },
-    normalizedName() {
-      this.$emit('input', this.normalizedName);
+    personInfo() {
+      this.setChanges();
+      this.$emit('input', this.personInfo);
     },
     autoFocus() {
       this.setFocus();
@@ -44,6 +52,9 @@ export default {
     this.setSelect();
   },
   methods: {
+    setChanges() {
+      this.changes += 1;
+    },
     setFocus() {
       if (this.autoFocus) {
         this.$el.querySelector('input').focus();
@@ -54,8 +65,18 @@ export default {
         this.$el.querySelector('input').select();
       }
     },
-    normalizeName(myName) {
-      return myName.toUpperCase();
+    normalizeName(name) {
+      return name.toUpperCase();
+    },
+    increaseAge() {
+      this.age += 1;
+    },
+    decreaseAge() {
+      this.age -= 1;
+    },
+    splitInfo(info) {
+      const [name, age] = info.split('-');
+      return { name, age: parseInt(age, 10) };
     },
   },
 };

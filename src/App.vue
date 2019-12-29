@@ -5,9 +5,9 @@
       msg="Welcome to Your Vue.js App"
       :autoFocus="autoFocus"
       :select="select"
-      v-model="name"
+      v-model="info"
     />
-    <h2>Your name is: {{ name }}</h2>
+    <h2>Your info: Name: {{ name }}; Age: {{ age }}</h2>
     <button type="button" @click="reset">Reset</button>
   </div>
 </template>
@@ -21,13 +21,22 @@ export default {
     HelloWorld,
   },
   data: () => ({
+    info: 'Provide your name-18',
     name: 'Provide your name',
+    age: 18,
     autoFocus: true,
     select: true,
   }),
+  watch: {
+    info() {
+      const [name, age] = this.info.split('-');
+      this.name = name;
+      this.age = parseInt(age, 10);
+    },
+  },
   methods: {
     reset() {
-      this.name = 'Provide your name';
+      this.info = 'Provide your name-18';
       this.select = false;
       this.autoFocus = false;
       this.$nextTick(() => {
