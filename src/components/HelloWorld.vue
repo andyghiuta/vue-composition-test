@@ -15,7 +15,7 @@
 
 <script>
 import {
-  ref, reactive, toRefs, computed,
+  ref, reactive, toRefs, computed, watch,
 } from '@vue/composition-api';
 
 const splitInfo = (info) => {
@@ -32,21 +32,6 @@ export default {
     value: String,
     autoFocus: Boolean,
     select: Boolean,
-  },
-  watch: {
-    value(outsideValue) {
-      Object.assign(this, splitInfo(outsideValue));
-    },
-    personInfo() {
-      this.setChanges();
-      this.$emit('input', this.personInfo);
-    },
-    autoFocus() {
-      this.setFocus();
-    },
-    select() {
-      this.setSelect();
-    },
   },
   mounted() {
     this.setFocus();
@@ -83,6 +68,22 @@ export default {
         }, 100);
       }
     };
+
+    // define watches
+    // props, refs and reactive objects can be watched for changes
+    // can watch a getter function
+    watch(() => props.autoFocus, setFocus);
+    watch(() => props.select, setSelect);
+    // optionally, can have be lazy (won't run on component initialize)
+    // defaults to false, contrary to how watches work in Vue 2
+    watch(() => props.value, (outsideValue) => {
+      Object.assign(info, splitInfo(outsideValue));
+    }, { lazy: true });
+    // watch a specific ref (computed)
+    watch(personInfo, () => {
+      setChanges();
+      context.emit('input', personInfo.value);
+    });
     // return the state with the reactive properties & methods
     // each property must be a ref
     return {
